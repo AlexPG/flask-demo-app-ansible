@@ -43,3 +43,9 @@ demo-app has been successfully deployed.
 **Usage**
 -----
 Navigate to [192.168.33.14](http://192.168.33.14) or [192.168.33.14/api](http://192.168.33.14/api) and you will see our demo-app application.
+
+**Important**
+---------
+Don't forget to close the virtual machine once you finished testing the application by typing
+
+    vagrant halt
