@@ -1,0 +1,12 @@
+#!/bin/bash
+
+NAME="demo-app"
+USER="vagrant"
+BIND="127.0.0.1:8000"
+NUM_WORKERS=3
+
+exec /home/vagrant/demo-app/venv/bin/gunicorn manage:app \
+  --name $NAME \
+  --workers $NUM_WORKERS \
+  --user=$USER \
+  --bind=$BIND

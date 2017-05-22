@@ -70,8 +70,14 @@
     - name: Create demo-app tables
       command: "{{ ansible_env.HOME }}/demo-app/venv/bin/python ./demo-app/manage.py createdb"
 
-    - name: Set the supervisor config file
+    - name: Set the gunicorn config file
       copy: 
+        src: files/gunicorn_start
+        dest: "{{ ansible_env.HOME }}/demo-app/venv/bin/gunicorn_start"
+        mode: 0764
+
+    - name: Set the supervisor config file
+      copy:
         src: files/demoapp.conf
         dest: /etc/supervisor/conf.d/demoapp.conf
       become: true
