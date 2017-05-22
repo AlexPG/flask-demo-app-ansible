@@ -1,0 +1,112 @@
+---
+- name: Deploy demo-app
+  hosts: development
+  tasks:
+
+    - name: Update apt cache
+      apt: 
+        update_cache: yes
+        cache_valid_time: 3600
+      become: true
+
+    - name: Install apt packages
+      apt:
+        name: "{{ item }}"
+        state: latest
+      become: true
+      with_items:
+        - build-essential
+        - python-setuptools
+        - python-dev
+        - python-virtualenv
+        - git
+        - nginx
+        - postgresql
+        - python-psycopg2
+        - libpq-dev
+        - supervisor
+
+    - name: Get project repo
+      git:
+        repo: https://github.com/AlexPG/flask-demo-app.git
+        dest: "{{ ansible_env.HOME }}/demo-app"
+        force: yes
+
+    - name: Install required python packages
+      pip:
+        name: "{{ item }}"
+        virtualenv: "{{ ansible_env.HOME }}/demo-app/venv"
+        virtualenv_python: python2.7
+      with_items:
+        - gunicorn
+
+    - name: Install requirements.txt
+      pip: 
+        requirements: "{{ ansible_env.HOME }}/demo-app/requirements.txt"
+        virtualenv: "{{ ansible_env.HOME }}/demo-app/venv"
+    
+    - name: Create postgresql user
+      postgresql_user:
+        name: vagrant
+      become: true
+      become_user: postgres
+
+    - name: Create development database
+      postgresql_db:
+        name: data_dev
+        owner: vagrant
+        encoding: UTF8
+      become: true
+      become_user: postgres
+
+    - name: Create test database
+      postgresql_db:
+        name: data_test
+        owner: vagrant
+        encoding: UTF8
+      become: true
+      become_user: postgres
+
+    - name: Create demo-app tables
+      command: "{{ ansible_env.HOME }}/demo-app/venv/bin/python ./demo-app/manage.py createdb"
+
+    - name: Set the supervisor config file
+      copy: 
+        src: files/demoapp.conf
+        dest: /etc/supervisor/conf.d/demoapp.conf
+      become: true
+      notify: restart supervisor
+
+    - name: Set the nginx config file
+      copy: 
+        src: files/demoapp
+        dest: /etc/nginx/sites-available/demoapp
+      become: true
+      notify: restart nginx
+    
+    - name: Remove the default nginx config file
+      file: 
+        path: /etc/nginx/sites-enabled/default 
+        state: absent
+      become: true
+      notify: restart nginx
+
+    - name: Enable the nginx config file
+      file:
+        src: /etc/nginx/sites-available/demoapp
+        dest: /etc/nginx/sites-enabled/demoapp
+        state: link
+      become: true
+      notify: restart nginx
+
+  handlers:
+    - name: restart supervisor
+      supervisorctl: 
+        name: demoapp 
+        state: restarted
+      become: True
+    - name: restart nginx
+      service: 
+        name: nginx 
+        state: restarted
+      become: True
