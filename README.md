@@ -36,7 +36,7 @@ Now we can procceed to deploy our demo-app application with the following comman
 If you see the following output
 
     PLAY RECAP *********************************************************************
-    demo-app                   : ok=16   changed=15   unreachable=0    failed=0
+    demo-app                   : ok=17   changed=16   unreachable=0    failed=0
 
 demo-app has been successfully deployed.
 

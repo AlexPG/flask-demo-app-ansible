@@ -1,6 +1,6 @@
 [program:demoapp]
-command = /home/vagrant/demo-app/venv/bin/gunicorn_start
-directory = /home/vagrant/demo-app
+command = {{ venv_path }}/bin/gunicorn_start
+directory = {{ project_path }}
 user = vagrant
 autostart = true
 autorestart = true

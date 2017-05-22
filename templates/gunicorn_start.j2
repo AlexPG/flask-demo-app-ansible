@@ -3,9 +3,9 @@
 NAME="demo-app"
 USER="vagrant"
 BIND="127.0.0.1:8000"
-NUM_WORKERS=3
+NUM_WORKERS=4
 
-exec /home/vagrant/demo-app/venv/bin/gunicorn manage:app \
+exec {{ venv_path }}/bin/gunicorn manage:app \
   --name $NAME \
   --workers $NUM_WORKERS \
   --user=$USER \

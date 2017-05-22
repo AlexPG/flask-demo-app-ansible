@@ -3,7 +3,7 @@ server {
     listen 80;
     server_name demo_app;
 
-    root /home/vagrant/demo-app;
+    root {{ project_path }};
 
     location / {
         proxy_redirect      off;
@@ -14,6 +14,6 @@ server {
     }
 
     location /static/ {
-        alias           /home/vagrant/demo-app/demo_app/static/;
+        alias           {{ project_path }}/demo_app/static/;
     }
 }
